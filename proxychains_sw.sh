@@ -13,12 +13,18 @@ TMP_DIR=/tmp
 
 # Gather the SSH connections with socks proxy usage
 N=0
-echo -e "\e[32m[*] Detected socks SSH connections.\e[0m"
+echo -e "\e[32m[*] Searching for socks SSH connections...\e[0m"
 for i in $(ps -fe | grep 'ssh\ ' | grep '\-D' | awk -F" " '{print $2}'); do
     array[$N]=$(xargs -0 echo < /proc/$i/cmdline)
     echo "$N: ${array[$N]}"
     let "N = $N + 1"
 done
+
+# Zero check
+if [ ${#array[@]} == 0 ]; then
+    echo -e "\e[31m[-] No socks SSH connection detected!\e[0m"
+    exit
+fi
 
 # Ask user to choose
 while [ 1 ]; do
